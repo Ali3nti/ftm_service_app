@@ -52,12 +52,11 @@ class _SignInPageState extends State<SignInPage> {
       onWillPop: _onBackPressed,
       child: Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
             elevation: 0,
             backgroundColor: kWhite,
             title: Text(
               Translations.of(context).text('sing_in'),
-              style: const TextStyle(color: Colors.grey, fontSize: 15,),
+              style: const TextStyle(color: Colors.grey, fontSize: 15),
             ),
             actions: <Widget>[
               TextButton(
@@ -94,6 +93,9 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         Text(Translations.of(context).text('lets_get_start'),
                             style: taglineText),
+
+                        // Text(Translations.of(context).text('lets_get_start'),
+                        //     style: taglineText),
                         ftmPersonalCodeInput(
                           Translations.of(context).text('personnel_code'),
                         ),
@@ -103,12 +105,23 @@ class _SignInPageState extends State<SignInPage> {
                         TextButton(
                           onPressed: () {
                             //ToDo : Forgot Password onPressed Here ...
+//**********************************************************************************************************
+//                             Navigator.pushReplacement(
+//                               context,
+//                               PageTransition(
+//                                 type: PageTransitionType.rightToLeft,
+//                                 child: PanelPage(pageTitle: 'pannel',
+//                                 ),
+//                               ),
+//                             );
+//**********************************************************************************************************
                           },
                           child: Text(
                               Translations.of(context).text('forgot_password'),
                               style: kTextBoldContrast),
                         ),
                         ElevatedButton(
+                          //TODO : SignInPage : after user press Enter button Send Data To Server And Check authentication :
                           onPressed: () async {
                             setState(() {
                               userName = personnelCodeController.text;

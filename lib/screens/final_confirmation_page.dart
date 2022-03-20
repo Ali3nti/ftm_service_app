@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:ftm_service_app/constructor.dart';
-import 'package:ftm_service_app/screens/home_page.dart';
-import 'package:ftm_service_app/services/network_adapter.dart';
-import 'package:ftm_service_app/structures/dispensers.dart';
-import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import '../translations.dart';
 import 'end_shift_page.dart';
+import 'finish_page.dart';
 
 class FinalConfirm extends StatefulWidget {
   const FinalConfirm(
       {Key? key,
+      required this.title,
       required this.dispenser1A,
       required this.dispenser1B,
       required this.dispenser2A,
@@ -21,11 +18,10 @@ class FinalConfirm extends StatefulWidget {
       required this.totalShiftFunction,
       required this.totalShiftCash,
       required this.handShiftCash,
-      required this.cardShiftCash,
-      required this.operatorName})
+      required this.cardShiftCash})
       : super(key: key);
 
-  final String operatorName;
+  final String title;
 
   final String dispenser1A;
   final String dispenser1B;
@@ -44,46 +40,6 @@ class FinalConfirm extends StatefulWidget {
 }
 
 class _FinalConfirmState extends State<FinalConfirm> {
-  var persianInUSFormat = NumberFormat.currency(locale: 'fa', symbol: '');
-
-  final Dispensers _dispensers = Dispensers();
-  Future<Dispensers>? futureInputUser;
-  Future<bool> futureGet() async {
-    String user = "1";
-    String dis_1 = widget.dispenser1A;
-    String dis_2 = widget.dispenser1B;
-    String dis_3 = widget.dispenser2A;
-    String dis_4 = widget.dispenser2B;
-    String dis_5 = widget.dispenser3A;
-    String dis_6 = widget.dispenser3B;
-    String hcash = widget.handShiftCash;
-    String ccash = widget.cardShiftCash;
-    String total_cash = widget.totalShiftCash;
-    String sum_dis = widget.totalShiftFunction;
-    print("***" + total_cash);
-
-    futureInputUser = setShiftData(
-        url: 'https://app.srahmadi.ir/setshiftdata.php',
-        user: user,
-        dis_1: dis_1,
-        dis_2: dis_2,
-        dis_3: dis_3,
-        dis_4: dis_4,
-        dis_5: dis_5,
-        dis_6: dis_6,
-        sum_dis: sum_dis,
-        total_cash: total_cash,
-        hcash: hcash,
-        ccash: ccash);
-    await futureInputUser!.then((value) {
-      if (value.id != null) {
-        _dispensers.id = value.id;
-        return true;
-      }
-    });
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -351,8 +307,7 @@ class _FinalConfirmState extends State<FinalConfirm> {
                                   width: kBoxSizeWith,
                                   height: kBoxSizeHeight,
                                   child: CardWidget(
-                                    value: persianInUSFormat.format(
-                                        int.parse(widget.handShiftCash)),
+                                    value: widget.handShiftCash,
                                   ),
                                 ),
                               ],
@@ -381,8 +336,7 @@ class _FinalConfirmState extends State<FinalConfirm> {
                                   width: kBoxSizeWith,
                                   height: kBoxSizeHeight,
                                   child: CardWidget(
-                                    value: persianInUSFormat.format(
-                                        int.parse(widget.cardShiftCash)),
+                                    value: widget.cardShiftCash,
                                   ),
                                 ),
                               ],
@@ -414,8 +368,7 @@ class _FinalConfirmState extends State<FinalConfirm> {
                                   width: kBoxSizeWith,
                                   height: kBoxSizeHeight,
                                   child: CardWidget(
-                                    value: persianInUSFormat.format(
-                                        int.parse(widget.totalShiftCash)),
+                                    value: widget.totalShiftCash,
                                   ),
                                 ),
                               ],
@@ -440,7 +393,7 @@ class _FinalConfirmState extends State<FinalConfirm> {
                               PageTransition(
                                 type: PageTransitionType.rightToLeft,
                                 child: EndShiftPage(
-                                  operatorName: widget.operatorName,
+                                  operator: 'Zzzzzz',
                                   lastDispenserData1A: widget.dispenser1A,
                                   lastDispenserData1B: widget.dispenser1B,
                                   lastDispenserData2A: widget.dispenser2A,
@@ -468,14 +421,15 @@ class _FinalConfirmState extends State<FinalConfirm> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            futureGet().then((value) {
-                              String id = '';
-                              id = _dispensers.id.toString();
-                              if (id != '') {
-                                showAlertDialog(context, widget.operatorName);
-                                print(id);
-                              }
-                            });
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: const FinishPage(
+                                  pageTitle: 'Finish Page',
+                                ),
+                              ),
+                            );
                           },
                           child: Text(
                             Translations.of(context).text("finish"),
@@ -509,7 +463,6 @@ class CardWidget extends StatelessWidget {
   }) : super(key: key);
 
   final String value;
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -525,7 +478,9 @@ class CardWidget extends StatelessWidget {
         width: 100.0,
         height: 34.0,
         child: Text(
+          // '$_counter',
           value,
+          //'کارکرد 0.0',
           style: const TextStyle(
             locale: Locale('en'),
             fontWeight: FontWeight.bold,
@@ -535,44 +490,4 @@ class CardWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-showAlertDialog(BuildContext context, String operatorName) {
-  // set up the buttons
-  Widget cancelButton = TextButton(
-    child: Text("خروج از برنامه"),
-    onPressed: () {
-      SystemNavigator.pop();
-    },
-  );
-  Widget continueButton = TextButton(
-    child: Text("ورود به صفحه اصلی"),
-    onPressed: () {
-      Navigator.pushReplacement(
-          context,
-          PageTransition(
-              child: HomePage(
-                operatorName: operatorName,
-              ),
-              type: PageTransitionType.fade));
-    },
-  );
-
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    content: Text("خسته نباشید!"),
-    actions: [
-      cancelButton,
-      continueButton,
-    ],
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
 }
