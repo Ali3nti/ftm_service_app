@@ -36,6 +36,8 @@ class MyApp extends StatelessWidget {
   static DataStructures data = DataStructures();
 
   static late Locale locale = const Locale('fa', 'IR');
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

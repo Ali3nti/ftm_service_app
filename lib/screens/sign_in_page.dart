@@ -199,7 +199,6 @@ class _SignInPageState extends State<SignInPage> {
               // );
               getResponse(username: userName, password: password).then(
                 (value) {
-
                   if (value == 'ok') {
                     String name = "";
                     String token = "";
@@ -221,8 +220,7 @@ class _SignInPageState extends State<SignInPage> {
                         context,
                         PageTransition(
                           type: PageTransitionType.rightToLeft,
-                          child: HomePage(
-                          ),
+                          child: HomePage(),
                         ),
                       );
                     }
@@ -258,8 +256,13 @@ class _SignInPageState extends State<SignInPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
+          GestureDetector(
+            onTap: (){
+              // Navigator.push(context,MaterialPageRoute(builder: (context) => ,))
+            },
+          child: Text(
             getTranslated(context, 'enter'),
+          ),
           ),
         ],
       ),

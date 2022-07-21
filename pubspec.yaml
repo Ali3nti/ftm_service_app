@@ -20,6 +20,7 @@ dependencies:
   persian_date: ^0.1.5
   package_info_plus: ^1.0.2
   url_launcher: ^6.0.20
+  device_info_plus: ^4.0.0
 
   flutter_localizations:
     sdk: flutter

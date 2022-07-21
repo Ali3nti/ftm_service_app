@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
+
+
+
 const URL = "https://www.test.helyasi.ir";
+const mURL = 'http://192.168.1.104/farzin.com/local/public/';
+
+int counter = 1;
 
 //Colors used in project
 const Color kLightBackgroundColor = Color(0xfff4f7fa);

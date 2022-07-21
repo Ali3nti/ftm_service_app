@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ftm_service_app/constructor.dart';
@@ -7,7 +10,10 @@ import 'package:ftm_service_app/services/network_adapter.dart';
 import 'package:ftm_service_app/services/shared_preference.dart';
 import 'package:ftm_service_app/services/translations.dart';
 import 'package:ftm_service_app/structures/data_structures.dart';
+import 'package:ftm_service_app/structures/state_model.dart';
 import 'package:page_transition/page_transition.dart';
+
+import 'package:ftm_service_app/global.dart' as global;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key, required this.version}) : super(key: key);
@@ -50,12 +56,41 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void getDataServer() async {
+    getUserInfo().then((value) {
+      StateModel? stateModel = value.state;
+      print("!!!: ${value.userId}");
+      print("!!!: ${value.firstName}");
+      print("!!!: ${value.lastName}");
+      print("!!!: ${value.roleId}");
+      print("!!!: ${value.roleName}");
+      print("!!!: ${value.phone}");
+      print("!!!: ${value.cardId}");
+      print("!!!: ${value.personnelId}");
+      print("!!!: ${value.token}");
+      print("!!!: ${value.deviceId}");
+      print("!!!: ${stateModel!.stateId}");
+      print("!!!: ${stateModel.stateName}");
+      print("!!!: ${stateModel.supervisorId}");
+      print("!!!: ${stateModel.supervisorName}");
+      print("!!!: ${stateModel.tblShift}");
+      print("!!!: ${stateModel.status}");
+      print("!!!: ${stateModel.location}");
+      print("!!!: ${stateModel.detail}");
+      print("!!!: ${value.city}");
+      print("!!!: ${value.areaLimit}");
+      print("!!!: ${value.avatar}");
+      print("!!!: ${value.otpValue}");
+      print("!!!: ${value.status}");
+      print("!!!: ${value.getRole()}");
+    });
     Duration duration = const Duration(seconds: 3);
 
     await Future.delayed(duration, () async {
       SharedPreference sharedPreference = SharedPreference();
       _username = await sharedPreference.read('username');
       _auth = await sharedPreference.read('token');
+      String? deviceId = await getId();
+      print("!!!!--> $deviceId");
 
       if (_username == '' || _auth == '') {
         Navigator.pushNamedAndRemoveUntil(
@@ -119,6 +154,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     getDataServer();
     version = version + widget.version;
+
     super.initState();
   }
 
@@ -144,14 +180,44 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(
               height: 100,
             ),
-            Text(
-              version,
-              style: const TextStyle(color: kPrimaryColor),
+            GestureDetector(
+              child: Text(
+                version,
+                style: const TextStyle(color: kPrimaryColor),
+              ),
+              onTap: () {
+                showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      // <-- SEE HERE
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(35.0),
+                      ),
+                    ),
+                    builder: (builder) {
+                      return Container(
+                        height: 300,
+                        child: Center(child: Text("0000")),
+                      );
+                    });
+              },
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<String?> getId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      // import 'dart:io'
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else if (Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      return androidDeviceInfo.androidId; // unique ID on Android
+    }
   }
 
   ElevatedButton buildButtonReload() {

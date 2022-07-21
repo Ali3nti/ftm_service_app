@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:ftm_service_app/constructor.dart';
 import 'package:ftm_service_app/structures/data_structures.dart';
+import 'package:ftm_service_app/structures/user_model.dart';
 import 'package:http/http.dart' as http;
 
 Future<DataStructures> connect(
@@ -132,8 +133,37 @@ Future<dynamic> sendData({
       headers: headers, encoding: Encoding.getByName('utf-8'), body: msg);
   if (response.statusCode == 200) {
     // in My project statusCode  = 200
-    print(response.body);
+    // print(response.body);
     return jsonDecode(response.body);
+  } else {
+    // If the server did not return a 201 CREATED response,
+    // then throw an exception.
+    String errorCode = response.statusCode.toString();
+    throw Exception('Failed to connect: $errorCode');
+  }
+}
+Future<UserModel> getUserInfo(
+    {String userName = '100001'}) async {
+  Uri uri = Uri.parse(mURL + "api/user_info");
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
+  final msg = jsonEncode({"id_personnel": userName});
+
+  final response = await http.post(
+    uri,
+    headers: headers,
+    encoding: Encoding.getByName('utf-8'),
+    body: msg,
+  );
+
+  // List<dynamic> responseJson = json.decode(utf8.decode(response.bodyBytes));
+
+  if (response.statusCode == 200) {
+    // in My project statusCode  = 200
+    print(response.body);
+    return UserModel.fromJson(jsonDecode(response.body));
+    // return DataStructures.fromJson(jsonDecode(response.body));
   } else {
     // If the server did not return a 201 CREATED response,
     // then throw an exception.
